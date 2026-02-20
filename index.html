@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart India Recharge - Multi Recharge Software</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel (JSX in browser) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  </style>
+</head>
+
+<body class="bg-slate-100">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // ====== SETTINGS ======
+    const TAGLINE = "Multi Recharge Software / All Services One App";
+    const SUPPORT_NUMBER = "7073248740";
+    const PLAYSTORE = "https://play.google.com/store/apps/details?id=com.solution.app.smartIndiarecharg";
+    const WHATSAPP_LINK = "https://wa.me/917073248740?text=" + encodeURIComponent("नमस्ते, Smart India Recharge में सहायता चाहिए।");
+
+    // ====== ICONS ======
+    const Icons = {
+      Smartphone: () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12.01" y2="18"></line>
+        </svg>
+      ),
+      Monitor: () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      ),
+      Calculator: () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          className="mr-2 text-[#ff5722]">
+          <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+          <line x1="8" y1="6" x2="16" y2="6"></line>
+          <line x1="16" y1="14" x2="16" y2="18"></line>
+          <path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path>
+          <path d="M12 14h.01"></path><path d="M8 14h.01"></path>
+          <path d="M12 18h.01"></path><path d="M8 18h.01"></path>
+        </svg>
+      ),
+      Wallet: () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          className="text-[#ff5722]">
+          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+          <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+          <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+        </svg>
+      ),
+      Tag: () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          className="mr-2 text-[#ff5722]">
+          <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path>
+          <path d="M7 7h.01"></path>
+        </svg>
+      ),
+      IndianRupee: () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          className="text-gray-400">
+          <path d="M6 3h12"></path>
+          <path d="M6 8h12"></path>
+          <path d="M6 13h8.5a4.5 4.5 0 0 0 0-9"></path>
+          <path d="M13 13l-7 8"></path>
+        </svg>
+      ),
+      WhatsApp: () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 21l1.65-5.55A9 9 0 1 1 21 12a9 9 0 0 1-13.35 7.8L3 21z"></path>
+          <path d="M8.5 9.5c.5 2.5 3.5 5.5 6 6"></path>
+        </svg>
+      ),
+      Download: () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <path d="M7 10l5 5 5-5" />
+          <path d="M12 15V3" />
+        </svg>
+      )
+    };
+
+    // ====== LOGO (built-in) ======
+    function SIRLogo() {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center select-none">
+          <div className="relative">
+            <div className="text-4xl font-black italic tracking-tight leading-none">
+              <span className="text-black drop-shadow-[0_1px_0_rgba(0,0,0,0.2)]">S</span>
+              <span className="text-[#ff5722]">I</span>
+              <span className="text-black drop-shadow-[0_1px_0_rgba(0,0,0,0.2)]">R</span>
+            </div>
+            <div className="absolute -top-2 -left-2 w-3 h-3 bg-[#ff5722] rotate-12 rounded-sm opacity-80"></div>
+            <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-[#ff5722] -rotate-12 rounded-sm opacity-80"></div>
+          </div>
+          <div className="text-[#ff5722] font-extrabold text-lg -mt-1 tracking-wide">India</div>
+        </div>
+      );
+    }
+
+    // ====== COMMISSION DATA (Your exact slab) ======
+    const commissionData = {
+      pro: {
+        mobile: { "Reliance Jio": 0.60, "Vi": 3.10, "Airtel": 2.10, "BSNL": 3.10 },
+        dth: { "Airtel Digital Tv": 3.10, "Dish Tv": 3.00, "Sun Direct": 3.00, "Tata Sky": 2.70, "Videocon D2h": 3.10 }
+      },
+      retailer: {
+        mobile: { "Reliance Jio": 0.50, "Vi": 2.40, "Airtel": 1.40, "BSNL": 2.40 },
+        dth: { "Airtel Digital Tv": 2.40, "Dish Tv": 2.40, "Sun Direct": 3.00, "Tata Sky": 2.40, "Videocon D2h": 2.40 }
+      }
+    };
+
+    // ====== UI HELPERS ======
+    function Pill({ active, children, onClick }) {
+      return (
+        <button
+          onClick={onClick}
+          className={
+            "px-3 py-2 rounded-xl text-sm font-semibold transition-all border " +
+            (active
+              ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+              : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50")
+          }
+        >
+          {children}
+        </button>
+      );
+    }
+
+    function SectionTitle({ title, subtitle }) {
+      return (
+        <div className="mb-4">
+          <h3 className="text-lg font-extrabold text-slate-900">{title}</h3>
+          {subtitle ? <p className="text-sm text-slate-600 mt-1">{subtitle}</p> : null}
+        </div>
+      );
+    }
+
+    // ====== DOWNLOAD SECTION ======
+    function DownloadSection() {
+      return (
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center p-2">
+              <SIRLogo />
+            </div>
+            <div>
+              <div className="text-xl font-extrabold text-slate-900">Download App</div>
+              <div className="text-sm text-slate-600">{TAGLINE}</div>
+            </div>
+          </div>
+
+          <div className="mt-5 grid sm:grid-cols-2 gap-3">
+            <a
+              href={PLAYSTORE}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-500 hover:opacity-95 text-white font-extrabold py-4 rounded-3xl shadow-lg"
+            >
+              <Icons.Download /> Download Smart India Recharge App
+            </a>
+
+            <a
+              href={PLAYSTORE}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-3 bg-black hover:opacity-90 text-white font-extrabold py-4 rounded-3xl shadow-lg"
+            >
+              ▶ Download on Play Store
+            </a>
+          </div>
+
+          <div className="mt-4 text-xs text-slate-500 font-semibold">
+            Support WhatsApp: <span className="text-slate-900">{SUPPORT_NUMBER}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ====== SLAB LIST (Your text as a digital product) ======
+    function CommissionSlabBox() {
+      return (
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+          <SectionTitle title="Commission Slab (Dono ID)" subtitle="Pro Retailer / Retailer ID ka slab" />
+
+          <div className="grid lg:grid-cols-2 gap-4">
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+              <div className="font-extrabold text-slate-900">Pro Retailer ID Commission</div>
+              <div className="mt-3 text-sm text-slate-700">
+                <div className="font-bold">Mobile Recharge</div>
+                <ul className="list-disc list-inside mt-1 space-y-0.5">
+                  <li>Reliance Jio - 0.60%</li>
+                  <li>Vi - 3.10%</li>
+                  <li>Airtel - 2.10%</li>
+                  <li>BSNL - 3.10%</li>
+                </ul>
+
+                <div className="font-bold mt-3">DTH Recharge</div>
+                <ul className="list-disc list-inside mt-1 space-y-0.5">
+                  <li>Airtel Digital Tv - 3.10%</li>
+                  <li>Dish Tv - 3.00%</li>
+                  <li>Sun Direct - 3.00%</li>
+                  <li>Tata Sky - 2.70%</li>
+                  <li>Videocon D2h - 3.10%</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+              <div className="font-extrabold text-slate-900">Retailer ID Commission</div>
+              <div className="mt-3 text-sm text-slate-700">
+                <div className="font-bold">Mobile Recharge</div>
+                <ul className="list-disc list-inside mt-1 space-y-0.5">
+                  <li>Reliance Jio - 0.50%</li>
+                  <li>Vi - 2.40%</li>
+                  <li>Airtel - 1.40%</li>
+                  <li>BSNL - 2.40%</li>
+                </ul>
+
+                <div className="font-bold mt-3">DTH Recharge</div>
+                <ul className="list-disc list-inside mt-1 space-y-0.5">
+                  <li>Airtel Digital Tv - 2.40%</li>
+                  <li>Dish Tv - 2.40%</li>
+                  <li>Sun Direct - 3.00%</li>
+                  <li>Tata Sky - 2.40%</li>
+                  <li>Videocon D2h - 2.40%</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 text-xs text-slate-500 font-semibold">
+            Note: Commission slab update ho sakta hai. Latest ke liye WhatsApp karein: <span className="text-slate-900">{SUPPORT_NUMBER}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ====== DIGITAL PRODUCT (Calculator + selection) ======
+    function CommissionCalculatorDigitalProduct() {
+      const [idType, setIdType] = useState("pro");
+      const [serviceType, setServiceType] = useState("mobile");
+      const [operator, setOperator] = useState("");
+      const [amount, setAmount] = useState("");
+
+      useEffect(() => {
+        setOperator("");
+        setAmount("");
+      }, [idType, serviceType]);
+
+      const currentOperators = Object.keys(commissionData[idType][serviceType]);
+      const commissionPercentage = operator ? commissionData[idType][serviceType][operator] : 0;
+
+      const calculatedCommission =
+        amount && operator ? ((parseFloat(amount) * commissionPercentage) / 100).toFixed(2) : "0.00";
+
+      return (
+        <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+          <div className="bg-gray-900 p-6 text-center rounded-b-[36px]">
+            <div className="mx-auto w-20 h-20 bg-white rounded-full shadow-md flex items-center justify-center p-2">
+              <SIRLogo />
+            </div>
+            <h2 className="text-xl font-bold text-white mt-3">Commission Calculator</h2>
+            <p className="text-gray-400 text-sm">{TAGLINE}</p>
+          </div>
+
+          <div className="p-5 space-y-5 -mt-3 bg-white rounded-t-[26px]">
+
+            {/* Step 1: ID Select */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700 flex items-center">
+                <Icons.Tag /> Step 1: ID Select Karein
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setIdType("retailer")}
+                  className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
+                    idType === "retailer" ? "bg-gray-900 text-white shadow-md" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  Retailer ID
+                </button>
+                <button
+                  onClick={() => setIdType("pro")}
+                  className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
+                    idType === "pro" ? "bg-[#ff5722] text-white shadow-md" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  Pro Retailer
+                </button>
+              </div>
+            </div>
+
+            {/* Step 2: Service Select */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700 flex items-center">
+                <Icons.Monitor /> Step 2: Service Select Karein
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setServiceType("mobile")}
+                  className={`flex items-center justify-center py-3 px-4 rounded-xl text-sm font-bold transition-all ${
+                    serviceType === "mobile" ? "border-2 border-gray-900 bg-white text-gray-900" : "border-2 border-transparent bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  <Icons.Smartphone /> Mobile
+                </button>
+                <button
+                  onClick={() => setServiceType("dth")}
+                  className={`flex items-center justify-center py-3 px-4 rounded-xl text-sm font-bold transition-all ${
+                    serviceType === "dth" ? "border-2 border-gray-900 bg-white text-gray-900" : "border-2 border-transparent bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  <Icons.Monitor /> DTH
+                </button>
+              </div>
+            </div>
+
+            {/* Operators */}
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <label className="text-sm font-semibold text-slate-700 flex items-center mb-2">
+                <Icons.Tag /> Step 3: Operator Select Karein
+              </label>
+
+              <div className="flex flex-wrap gap-2">
+                {currentOperators.map((op) => (
+                  <button
+                    key={op}
+                    onClick={() => setOperator(op)}
+                    className={`px-3 py-2 rounded-xl text-xs border transition-all ${
+                      operator === op
+                        ? "border-[#ff5722] bg-[#fff3ef] text-[#e64a19] font-extrabold shadow-sm"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="text-[11px]">{op}</div>
+                    <div className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded ${
+                      operator === op ? "bg-[#ff5722] text-white" : "bg-slate-100 text-slate-700"
+                    }`}>
+                      {commissionData[idType][serviceType][op].toFixed(2)}%
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Amount + Result */}
+            {operator && (
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm font-semibold text-slate-700 flex items-center mb-2">
+                    <Icons.Calculator /> Step 4: Recharge Amount (₹)
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Icons.IndianRupee />
+                    </div>
+                    <input
+                      type="number"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder="Enter amount (e.g. 299)"
+                      className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-xl bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] text-sm font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
+                  <div className="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-5 rounded-full"></div>
+                  <div className="absolute right-12 -bottom-6 w-16 h-16 bg-[#ff5722] opacity-20 rounded-full"></div>
+
+                  <div className="flex justify-between items-center relative z-10">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-gray-800 p-2 rounded-xl border border-gray-700">
+                        <Icons.Wallet />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold tracking-wide uppercase">Aapka Commission</p>
+                        <div className="text-2xl font-extrabold">₹{calculatedCommission}</div>
+                        <div className="text-xs text-gray-400 font-semibold mt-1">
+                          Rate: <span className="text-[#ff5722]">{commissionPercentage}%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-[10px] text-gray-400">Selected</p>
+                      <p className="text-xs font-bold text-white">{idType === "pro" ? "Pro Retailer" : "Retailer"}</p>
+                      <p className="text-xs font-bold text-white">{serviceType.toUpperCase()}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {amount && (
+                  <p className="text-center text-xs text-slate-600 font-semibold">
+                    ₹{amount} ke recharge par aapko ₹{calculatedCommission} ka commission milega.
+                  </p>
+                )}
+
+                <button
+                  onClick={() => { setOperator(""); setAmount(""); }}
+                  className="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-sm"
+                >
+                  Reset
+                </button>
+              </div>
+            )}
+
+            <div className="pt-1 text-center text-[11px] text-slate-500 font-semibold">
+              WhatsApp Support: <span className="text-slate-900">{SUPPORT_NUMBER}</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ====== PAGES ======
+    function HomePage({ onGoCalculator }) {
+      return (
+        <div className="space-y-6">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center p-2">
+                <SIRLogo />
+              </div>
+              <div>
+                <h1 className="text-2xl font-extrabold text-slate-900 leading-tight">Smart India Recharge</h1>
+                <p className="text-slate-600 text-sm mt-1">{TAGLINE}</p>
+              </div>
+            </div>
+
+            <div className="mt-5 grid sm:grid-cols-3 gap-3">
+              <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <div className="text-xs text-slate-500 font-bold">Digital Product</div>
+                <div className="text-slate-900 font-extrabold mt-1">Commission Tool</div>
+                <div className="text-xs text-slate-600 mt-1">ID → Service → Operator</div>
+              </div>
+              <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <div className="text-xs text-slate-500 font-bold">All Services</div>
+                <div className="text-slate-900 font-extrabold mt-1">Mobile / DTH</div>
+                <div className="text-xs text-slate-600 mt-1">Fast & easy</div>
+              </div>
+              <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <div className="text-xs text-slate-500 font-bold">Support</div>
+                <div className="text-slate-900 font-extrabold mt-1">WhatsApp Help</div>
+                <div className="text-xs text-slate-600 mt-1">{SUPPORT_NUMBER}</div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid sm:grid-cols-2 gap-3">
+              <button
+                onClick={onGoCalculator}
+                className="inline-flex items-center justify-center gap-2 bg-[#ff5722] hover:opacity-95 text-white font-extrabold py-3 rounded-2xl shadow"
+              >
+                <Icons.Calculator /> Open Commission Calculator
+              </button>
+
+              <a
+                href={PLAYSTORE}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:opacity-95 text-white font-extrabold py-3 rounded-2xl"
+              >
+                <Icons.Download /> Download App
+              </a>
+            </div>
+          </div>
+
+          <DownloadSection />
+        </div>
+      );
+    }
+
+    function ServicesPage() {
+      const items = [
+        { title: "Mobile Recharge", desc: "All major operators supported" },
+        { title: "DTH Recharge", desc: "Popular DTH operators available" },
+        { title: "Commission Calculator", desc: "Know profit before recharge" },
+        { title: "Retailer / Pro Retailer", desc: "Different slabs supported" },
+        { title: "WhatsApp Support", desc: `Help on ${SUPPORT_NUMBER}` },
+        { title: "One App", desc: "All services in one app" },
+      ];
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+            <SectionTitle title="Services" subtitle={TAGLINE} />
+            <div className="grid sm:grid-cols-2 gap-4">
+              {items.map((x) => (
+                <div key={x.title} className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                  <div className="font-extrabold text-slate-900">{x.title}</div>
+                  <div className="text-sm text-slate-600 mt-1">{x.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <CommissionSlabBox />
+        </div>
+      );
+    }
+
+    function ContactPage() {
+      return (
+        <div className="space-y-6">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+            <SectionTitle title="Contact" subtitle="Support ke liye WhatsApp karein" />
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <div className="font-extrabold text-slate-900">WhatsApp Support</div>
+                <div className="text-slate-700 mt-2 font-semibold">{SUPPORT_NUMBER}</div>
+                <a
+                  className="mt-3 inline-flex items-center gap-2 bg-[#25D366] text-white font-extrabold px-4 py-3 rounded-2xl hover:opacity-90"
+                  href={WHATSAPP_LINK}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Icons.WhatsApp /> WhatsApp Now
+                </a>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                <div className="font-extrabold text-slate-900">Download App</div>
+                <div className="text-sm text-slate-600 mt-2">{TAGLINE}</div>
+                <a
+                  className="mt-3 inline-flex items-center gap-2 bg-slate-900 text-white font-extrabold px-4 py-3 rounded-2xl hover:opacity-90"
+                  href={PLAYSTORE}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Icons.Download /> Open Play Store
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <CommissionSlabBox />
+        </div>
+      );
+    }
+
+    function TopNav({ page, setPage }) {
+      const items = [
+        { key: "home", label: "Home" },
+        { key: "services", label: "Services" },
+        { key: "calculator", label: "Calculator" },
+        { key: "contact", label: "Contact" },
+      ];
+
+      return (
+        <div className="sticky top-0 z-40 bg-slate-100/80 backdrop-blur border-b border-slate-200">
+          <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center p-1.5">
+                <SIRLogo />
+              </div>
+              <div className="leading-tight">
+                <div className="font-extrabold text-slate-900">Smart India Recharge</div>
+                <div className="text-xs text-slate-500 font-semibold">{TAGLINE}</div>
+              </div>
+            </div>
+
+            <div className="hidden sm:flex items-center gap-2">
+              {items.map((x) => (
+                <Pill key={x.key} active={page === x.key} onClick={() => setPage(x.key)}>
+                  {x.label}
+                </Pill>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <a
+                href={PLAYSTORE}
+                target="_blank"
+                rel="noreferrer"
+                className="hidden sm:inline-flex items-center gap-2 bg-[#ff5722] hover:opacity-95 text-white font-extrabold px-4 py-2 rounded-xl shadow-sm"
+              >
+                <Icons.Download /> Download
+              </a>
+
+              <select
+                className="sm:hidden px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold"
+                value={page}
+                onChange={(e) => setPage(e.target.value)}
+              >
+                {items.map((x) => <option key={x.key} value={x.key}>{x.label}</option>)}
+              </select>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function Footer() {
+      return (
+        <div className="mt-10 border-t border-slate-200 bg-white">
+          <div className="max-w-6xl mx-auto px-4 py-8 text-center">
+            <div className="font-extrabold text-slate-900">Smart India Recharge</div>
+            <div className="text-sm text-slate-600 mt-1">{TAGLINE}</div>
+            <div className="text-sm text-slate-600 mt-2">
+              WhatsApp Support: <span className="font-bold text-slate-900">{SUPPORT_NUMBER}</span>
+            </div>
+            <div className="text-xs text-slate-500 mt-3">
+              © {new Date().getFullYear()} Smart India Recharge. All rights reserved.
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function PhoneFrame({ children }) {
+      return (
+        <div className="relative mx-auto w-[360px] max-w-[92vw]">
+          <div className="rounded-[42px] bg-slate-900 p-[10px] shadow-2xl border border-slate-800">
+            <div className="rounded-[34px] bg-black p-[8px]">
+              <div className="relative rounded-[28px] overflow-hidden bg-slate-100">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20">
+                  <div className="mt-2 w-28 h-6 bg-black rounded-b-2xl flex items-center justify-center gap-2">
+                    <div className="w-10 h-1.5 bg-slate-800 rounded-full"></div>
+                    <div className="w-2.5 h-2.5 bg-slate-800 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="pt-8">{children}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [page, setPage] = useState("home");
+
+      const goCalculator = () => setPage("calculator");
+
+      let mainContent = null;
+      if (page === "home") mainContent = <HomePage onGoCalculator={goCalculator} />;
+      if (page === "services") mainContent = <ServicesPage />;
+      if (page === "calculator") mainContent = <CommissionCalculatorDigitalProduct />;
+      if (page === "contact") mainContent = <ContactPage />;
+
+      return (
+        <div className="min-h-screen">
+          <TopNav page={page} setPage={setPage} />
+
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="grid lg:grid-cols-2 gap-8 items-start">
+              <div>
+                <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 mb-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-slate-900 font-extrabold text-lg">Website View</div>
+                      <div className="text-sm text-slate-600">{TAGLINE}</div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Pill active={page==="home"} onClick={() => setPage("home")}>Home</Pill>
+                      <Pill active={page==="services"} onClick={() => setPage("services")}>Services</Pill>
+                      <Pill active={page==="calculator"} onClick={() => setPage("calculator")}>Calculator</Pill>
+                      <Pill active={page==="contact"} onClick={() => setPage("contact")}>Contact</Pill>
+                    </div>
+                  </div>
+                </div>
+
+                {mainContent}
+              </div>
+
+              <div>
+                <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 mb-5">
+                  <div className="text-slate-900 font-extrabold text-lg">Mobile Preview</div>
+                  <div className="text-sm text-slate-600">Phone frame ke andar same website</div>
+                </div>
+
+                <PhoneFrame>
+                  <div className="px-4 pb-6">
+                    {mainContent}
+                  </div>
+                </PhoneFrame>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating WhatsApp */}
+          <a
+            href={WHATSAPP_LINK}
+            target="_blank"
+            rel="noreferrer"
+            className="fixed bottom-5 right-5 z-50 bg-[#25D366] text-white px-4 py-3 rounded-full shadow-xl font-extrabold text-sm flex items-center gap-2 hover:opacity-90"
+            title="WhatsApp"
+          >
+            <Icons.WhatsApp />
+            WhatsApp
+          </a>
+
+          <Footer />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
